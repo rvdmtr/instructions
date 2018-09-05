@@ -1,0 +1,4 @@
+curl wttr.in/Moscow
+curl cheat.sh/rsync
+
+du -sh . - look for disk usage in current catalog
