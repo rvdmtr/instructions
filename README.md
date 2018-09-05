@@ -1,2 +1,2 @@
 # instructions
-Text materials, notes, how-to, instructions, etc
+This repo will be contain some text materials, notes, how-to, instructions, etc...
