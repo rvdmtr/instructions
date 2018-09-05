@@ -1,0 +1,60 @@
+Сделал
+1) агент, УЗ, тариф
+2) указал сервер доступа 127.0.0.1, secret
+
+
+[root@RM/20137 /]# echo "User-Name='nor1', User-Password='1234'" | radclient 127.0.0.1 auth secret 
+radclient: no response from server for ID 218 socket 3
+
+[root@RM/20137 /]# echo "User-Name='nor1', User-Password='1234'" | radclient 127.0.0.1 auth secret 
+
+Received response ID 133, code 2, length = 108
+	Session-Timeout = 86400
+	Service-Type = Framed-User
+	Framed-Protocol = PPP
+	Framed-IP-Address = 10.0.0.255
+	Framed-IP-Netmask = 255.255.255.255
+	Class = 0x31353136656434342d376564332d343665332d386535642d3934646136303765363931632f31
+	Acct-Interim-Interval = 60
+	Reply-Message = "speed 1024"
+
+
+
+
+
+Как пример теста сессии
+root@lan3:~ # radtest k039192 domGivUgEs 10.18.1.5 0 15Kukara4aSE100
+
+Sent Access-Request Id 117 from 0.0.0.0:51980 to 10.18.1.5:1812 length 77
+User-Name = "k039192"
+User-Password = "domGivUgEs"
+NAS-IP-Address = 194.8.47.67
+NAS-Port = 0
+Message-Authenticator = 0x00
+Cleartext-Password = "domGivUgEs"
+Received Access-Accept Id 117 from 10.18.1.5:1812 to 0.0.0.0:0 length 181
+Session-Timeout = 864000
+Service-Type = Framed-User
+Framed-Protocol = PPP
+Framed-IP-Address = 10.39.0.192
+Framed-IP-Netmask = 255.255.255.255
+Class = 0x63363734663961382d636661342d343564662d393063322d3335363531636535336636662f34333634
+Acct-Interim-Interval = 600
+Qos-Policing-Profile-Name = "50M-in"
+Qos-Metering-Profile-Name = "50M-out"
+NAT-Policy-Name = "2"
+NAT-Policy-Name = "12"
+NAS-Identifier = "Redback"
+Context-Name = "local"
+Service-Type = Framed-User
+Acct-Delay-Time = 600
+root@lan3:~ # grep k039192 /usr/local/billing/lbarcd.log
+18.06.2018 21:02:55.529550 VERBOSE LWP101336 [src/radius_record.cpp:112] Attribute "User-Name", tag: "226", value: "k039192"
+18.06.2018 21:02:55.530006 VERBOSE LWP101336 [src/radius_packet.cpp:322] Trying to authorize user by login username='k039192'
+18.06.2018 21:02:55.530240 DEBUG LWP101336 SELECT `vg_id`, `pass` FROM `vgroups` WHERE ((`archive` = '0' AND (`template` = '0' OR `template` = '3')) AND `login` = BINARY( 'k039192' )) LIMIT 1
+18.06.2018 21:02:55.598164 VERBOSE LWP101336 [src/radius_record.cpp:388] Password is match to user 'k039192'
+18.06.2018 21:02:55.648824 VERBOSE LWP101336 [src/radius_packet.cpp:1158] ANI '' (User 'k039192') is clean
+18.06.2018 21:02:55.648829 VERBOSE LWP101336 [src/radius_packet.cpp:1069] User: 'k039192', bill by traffic, unlimited session timeout (864000)
+18.06.2018 21:02:55.688369 WARNING LWP101336 [src/radius.cpp:2118] ANI '' is bound to 10.39.0.192/255.255.255.255 for user 'k039192'
+18.06.2018 21:02:55.689398 INFO LWP101336 [src/radius.cpp:613] Access-Accept, <k039192> [4364]
+18.06.2018 21:02:56.143322 DEBUG LWP101320 [src/db/statement.cpp:12] INSERT INTO `auth_hist20180618` (`dt`, `vg_id`, `result`, `nas_id`, `session_id`, `comment`, `ip`, `attrs`, `mac`, `vg_login`, `nas_ip`) VALUES (FROM_UNIXTIME( '1529344975' ), '4364', '0', '3', '', '', 0x00000000000000000000ffff0a2700c0, '', '', 'k039192', 0x00000000000000000000ffff0a120104)
