@@ -1,3 +1,19 @@
 histroy - список выполненных ранее команд
 ~/.bash_history - файл содержит список выполненных ранее команд
 echo $HISTFILESIZE - сколько команд может храниться в файле истории
+
+
+man man
+section 1 - Executable programs or shell commands
+section 2 - System calls - functions provided by kernel
+section 3 - Library calls - functions with program libraries
+section 4 - special files - typically those found in /dev
+section 5 - file formats and conventions - e.g. /etc/passwd and other conf files
+section 6 - Games
+section 7 - Miscellaneous items and conventions - e.g. man(7),regex(7)
+section 8 - System administration commands - usually only for root
+section 9 - Kernel routines(non standard)
+
+man ls - справка по команде ls
+man -k touch - искать справочные руководства в БД по ключевому слову. Аналог apropos
+apropos touch - аналог man -k touch команды. Вывод результатов на экран аналогичный
