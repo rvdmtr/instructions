@@ -1,0 +1,6 @@
+flow-cat ft.file | flow-print -f5 | less  - посмотреть постранично содержимое файла статистики
+flown-cat ft.file | flow-nfilter -F <definition_name> -f </etc/flow-tools/cfg/filter.cfg> | flow-send 0/192.168.30.45/7223 - прочитать файл, отфильтровать по заданному фильру(definition-name), загрузить статистику на netflow-collector поуказанному адресу и порту [0 - локальный адрес / 192.168.30.45 - адрес куда загружать / 7223 - на какой порта]
+flow-gen -V5 | flow-send 0/192.168.30.45/7223 - генерируем и направляем поток на коллектор
+
+Ман по flow-nfilter, сортировка по числу и времени в конце мана
+также может помочь книга Michael W. Lucas - Network Flow Analysis
