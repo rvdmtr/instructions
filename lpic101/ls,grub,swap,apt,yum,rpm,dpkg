@@ -1,0 +1,193 @@
+lshw
+lsblk
+lspci
+lsusb
+modprobe - загрузить модуль ядра в память
+----------
+systemctl list-unit-files
+systemctl list-units -t <target name>
+----------
+ BIOS, MBR, boot loader, kernel, device initialization, root file system mount
+ ----------
+initramfs - This is the initial RAM disk file, which the kernel uses to temporarily mount the root file system and contains basic drivers. 
+ ---------- 
+journalctl -k
+dmesg - show output from kernel ring buffer
+
+------------------------------
+swap 
+раньше от 1,5 до 2 от имеющейся ОЗУ
+сейчас не менее 50% от имеющейся ОЗУ
+ ---------- 
+ mount
+ findmnt
+ sudo fdisk -l /dev/sda
+ sudo swapon --summary (same info in /proc/swaps)
+ ---------- 
+ /boot cannot be used by LVM
+ LVM
+ Physical volume(sda,sdb,sdc) >> Volume Group(vg_base) >> Logical Vloumes(lv_root,lv_var,lv_swap,lv_home) >> file systems (/,/var,/swap,/home)
+ pvs - physical volume scan
+ vgs - volume group scan
+ lvs - logical volume scan
+ -------------------- 
+ 
+ Installing LEGACY GRUB
+ findmnt /boot or findmnt /
+  grub-install /dev/sda5 or grub-install '(hd0)'
+grub 
+grub> help
+grub> help <command>
+grub> find /grub/stage1
+in grub> корень = кореньboot (/ == /boot)
+
+---------- 
+
+GRUB2
+--MBR supports 26 total partitions(4 partitions, with one partition extended to 23 partitions), partition size limited 2TB
+
+--GPT up to 128 partitions, partition size up to zetabyte ~910.000.000 TB, NEEDS UEFI to boot(insted of legacy BIOS, rquire x64 os)
+
+UEFI BIOS >>
+  STAGE1 : MBR (boot.img)(512bytes)  > GPT Header > Partition entry array >>
+  STAGE1.5 : typically emptyy sectors (core.img) >> looking for /boot/efi [vfat or FAT32](ESP - efi system partition)
+  STAGE2 : /boot/grub2 (grubenv, themes)
+  
+ Commands:
+ RH based distros: grub2-<command>
+ Deb: grub-<command>  
+ 
+ grub2-editenv list
+ cat /etc/default/grub (если меняешь настройки, после сохранения файла выполни grub2-mkconfig)
+ 
+ При загрузке GRUB, выбираем нужное ядро, жмем а, нажимаем пробел и ставим цифру нужного runlevel. Система загрузиться в выбранном runlevel
+ 
+ Переустановка GRUB, при выборе ядра, жмем "с", чтобы попасть в командный режим, вводим
+ grub> setup (hd0) [или другой диск который установлен в системе]
+
+
+В grub2, для выбора runlevel, в конце нужного ядра, прописываем systemd.unit=rescue.target
+
+в командном режиме 
+grub> ls посмотреть какие диски есть в системе [msdos говорит о том, что система использует MBR, вместо GPT]
+grub> ls (hd0,1)/  (отобразить содержимое первого раздела)
+grub> set root=(hd0,1) (установить корневой файловой системой первый раздел)  
+grub> linux /boot/vmlinuz<tab>  root=/dev/sda1(load specific kernel)
+grub> initrd /boot/initrd.img-4.13.0-43.generic (определяем initram диск)
+grub> boot (начинаем процесс загрузки)
+
+ --------------------
+ 102.3 - Manage Shared Libraries
+ SHARED LIBRARIES (разделяемые библиотеки) - файлы содержащие в себе функционал, который могут использовать другие приложения
+ .so - shared object
+ /lib, /usr/lib, /usr/lib32(64), /usr/local/lib, /usr/share
+ dynamic - .so      statically linked .a
+ 
+ ldd /bin/cp - посмотреть, какие библиотеки использует приложение
+ sudo ldconfig
+ cat /etc/ld.so.conf
+ 
+ echo $LD_LIBRARY_PATH
+ 
+----------------------
+APT advanced package tool
+HOW it works? - reads /etc/apt/sources.list >> directs installation and uninstallation to dpkg
+после apt-get update создается кэш, благодаря которому, можно оперативно установить тот или иной пакет. Каждый раз при установке пакета, проверяется локальный кэш
+
+apt-get remove - удаляет пакет, но оставляет конфиг файлы
+apt-get purge - удаляет пакет и конфигурационные файлы
+apt-get dist-upgrade - устанавливает новые версии пакетов и приводит текущую систему к состоянию последнего релиза(обновляет всё, в отлиие от apt upgrade)
+apt-get download - скачать пакет, но не устанавливать его
+apt-cache search apache - поискать в ранее сформированном кэше пакет apache
+apt-cache show libapace2-mod-bw - показать основную информацию о пакете 
+apt-cache showpkg libapace2-mod-bw - показать  техническую информацию о пакете, зависимостях
+
+-------------
+DPKG - debian package tool
+
+пакет .deb содержит в себе - приложение или утилиту, конфиг, инструкции как данный пакет и куда инсталлируется, список зависимостей для данного пакета
+apt автоматически устанавливает необходимые зависимости для пакета, dpkg не умеет
+
+dpkg --info <пакет>.deb - информация о пакете
+dpg --status nano - информация о пакете, но меньше деталей нежели в --info (status обычно используется по отношению к установленным пакетам в системе)
+dpkg -l nano - отображает список установленных пакетов
+dpkg -ivh пакет.deb - установить  пакет
+dpkg -L nano - информация о файлах пакета 
+
+dpkg -r htop - удалить пакет, но оставляет конфиги
+dpkg -P htop - удалить пакет и конфиги
+dpkg -S htop - найти упоминание о данном пакете в БД пакетов
+dpkg-reconfigure console-setup - позволяет повторно конфигурировать приложение(например веб-сервер или БД через интерфейс начальной установки, если таковой имеется)
+
+
+--------------------------
+YUM - yellowdog updater modifier
+on SUSE yum analog is zypper; on Fedora DNF
+
+handle rpm dependencies(подтягивает зависимости как и apt)
+/etc/yum.conf
+/etc/repos.d/
+/var/cache/yum
+
+
+yum update - прочитывает индивидуальные файлы репозиториев из каталога /etc/repos.d/, смотрит изменения и апдейтит, смотрит на установленные пакеты и апдейтит
+yum search - искать пакет в подключенных репозиториях
+yum info httpd - информация о пакете
+yun list installed | less - установленные пакеты
+yum clean all - очистить кэш локальной БД
+
+yum install httpd - установить
+yum remove -y httpd - удалить пакет,без зависимостей
+yum autoremove - удалить пакет и все зависимости
+
+yum whatprovides */httpd - смотрит какой пакет и какие файлы имеются в системе
+
+yum provides libmozjs185.* - посмотреть, что нужно для данной библиотеки
+
+
+yum reinstall httpd- переустановить пакет
+yum downloader mc - скачает rpm пакет
+
+------------------------
+
+RPM 
+пакет .rpm содержит в себе - приложение или утилиту, конфиг, инструкции как данный пакет и куда инсталлируется, список зависимостей для данного пакета
+/var/lib/rpm - rpm database
+rpm --rebuilddb - пересобрать испорченную БД пакетов
+
+rpm -qpi httpd.rpm - информация о пакете  (q- запрос, p - пакет, i - информация) / yum info
+rpm -qpl - список файлов в пакете
+rpm -qa - список всех установленных пакетов в системе
+
+rpm -ivh - установить пакет
+rpm -Uvh - установить более новую версию, рекомендуется применять в отношении всех пакетов, кром инсталляции ядра
+
+rpm -e - удалить пакет, без удаления конфигов
+rpm -Va - верифицировать все установленные пакеты, не битые ли
+
+rpm2cpio httpd.rpm | cpio -idmv - конвертирует rpm пакет в cpio архив, через пайп передает поток в cpio утилиту и извлекает файлы в ТЕКУЩИЙ каталог (i - extract, d - create dir, m - keep modified time of the original file, v - verbose) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
