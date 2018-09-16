@@ -1,0 +1,23 @@
+dd - copies and converts files
+dd if=boot.img of=/dev/sdc - скопировать содрежимое образа на флешку sdc (if - input file, of -output file)
+dd if=/dev/xvda /tmp/mbr.img bs=512 count=1 - сделать бэкап mbr записи диска, которая равна первым 512 байтам
+dd if=/dev/random of=file bs=1024k count=10 - создать файл произвольного содержания размером 10 мегабайт
+
+tar - tape archive, tarballs - позволяет несколько файлов обернуть в один файл архив, который потом можно сжать
+tar -c - создать архив -f указать какие файлы -v отобразить выполяемые операции 
+tar -cvf archive_name.tar file1 file2 file3 - создать архив и поместить в него файлы
+tar -vtf archive_name.tar - проверить содержимое архива
+tar -xvf archive_name.tar - извлечь содержимое архива
+tar -czvf arch.tar.gz file1 file2 - создать архив и сжать gzip (можно именовать arch.tar.gz или arch.tgz)
+tar -cvjf arch.tar.bz2 file1 file2 - создать tar архив и сжать bzip2
+tar -xzvf arch.tar.gz - извлечь содержимое gzip архивов
+tar -xjvf arch.tar.bz2 - извлечь содержимое bzip2 архивов
+
+gzip file1 - заменяет оригинальный файл архивом
+gunzip file1.gz - разархивировать файл
+
+bizp2 file1 - заменяет оригинальный файл архивом
+bunzip2 file1.bz2 - разархивировать файл
+
+xz file1 - заменяет оригинальный файл архивом
+unxz file1.xz - разархивировать файл
